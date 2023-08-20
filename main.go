@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"luis/go/rest-ws/handlers"
+	"luis/go/rest-ws/middleware"
 	"luis/go/rest-ws/server"
 
 	"github.com/gorilla/mux"
@@ -37,5 +38,11 @@ func main() {
 }
 
 func BindRoutes(s server.Server, r *mux.Router) {
+	r.Use(middleware.CheckAuthMiddleware(s))
+
 	r.HandleFunc("/", handlers.HomeHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/signup", handlers.SignUpHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/login", handlers.LoginHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/me", handlers.MeHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/posts", handlers.InsertPostHandler(s)).Methods(http.MethodPost)
 }
